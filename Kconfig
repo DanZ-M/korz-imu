@@ -1,0 +1,73 @@
+config KORZ_IMU
+	bool "MPU6050: print the readings over the USB serial log"
+	default y
+	depends on DT_HAS_INVENSENSE_MPU6050_ENABLED && !KORZ_IMU_MOUSE
+	select SENSOR
+	imply MPU6050
+	help
+	  First bring-up test: logs acceleration (in milli-g) and rotation speed once per period.
+
+config KORZ_IMU_PERIOD_MS
+	int "IMU print period (ms)"
+	default 500
+	depends on KORZ_IMU
+
+config KORZ_IMU_MOUSE
+	bool "Motion sensor (MPU6050) as pointing device (korz,imu-mouse)"
+	default y
+	depends on DT_HAS_KORZ_IMU_MOUSE_ENABLED
+	select SENSOR
+	select INPUT
+	select GPIO
+	imply MPU6050
+	help
+	  Tilt the dongle to move the pointer, or turn it like an air mouse. This replaces the
+	  plain serial-log test above, because both would read the same sensor.
+
+if KORZ_IMU_MOUSE
+
+choice KORZ_IMU_MODE
+	prompt "How the motion moves the pointer"
+	default KORZ_IMU_MODE_TILT
+
+config KORZ_IMU_MODE_TILT
+	bool "Tilt (the further you tilt, the faster it moves)"
+
+config KORZ_IMU_MODE_GYRO
+	bool "Air mouse (rotation speed)"
+
+endchoice
+
+config KORZ_IMU_SPEED
+	int "Tilt mode: speed at full tilt (pixels per second)"
+	default 700
+
+config KORZ_IMU_TILT_RANGE
+	int "Tilt mode: tilt in milli-g that counts as full tilt"
+	default 500
+	range 100 1000
+	help
+	  500 mg is about 30 degrees.
+
+config KORZ_IMU_TILT_DEADZONE
+	int "Tilt mode: dead zone around the neutral pose (percent of the range)"
+	default 10
+	range 0 60
+
+config KORZ_IMU_GYRO_GAIN
+	int "Air mouse mode: pixels per degree turned"
+	default 15
+
+config KORZ_IMU_GYRO_DEADZONE
+	int "Air mouse mode: ignore rotation slower than this (milli-degrees per second)"
+	default 1200
+
+config KORZ_IMU_POLL_MS
+	int "Sampling period (ms)"
+	default 10
+	range 5 50
+
+config KORZ_IMU_DEBUG
+	bool "Log the readings twice a second (needs the zmk-usb-logging snippet)"
+
+endif # KORZ_IMU_MOUSE

@@ -1,0 +1,5 @@
+if(CONFIG_KORZ_IMU OR CONFIG_KORZ_IMU_MOUSE)
+  zephyr_library()
+  zephyr_library_sources_ifdef(CONFIG_KORZ_IMU src/imu_log.c)
+  zephyr_library_sources_ifdef(CONFIG_KORZ_IMU_MOUSE src/imu_mouse.c)
+endif()
