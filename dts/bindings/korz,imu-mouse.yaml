@@ -1,0 +1,24 @@
+# MPU6050 (or any Zephyr accelerometer + gyro sensor) used as a pointing device: tilt the
+# board to move the pointer, or turn it like an air mouse. Pair it with a `zmk,input-listener`.
+description: IMU (motion sensor) pointing device
+
+compatible: "korz,imu-mouse"
+
+include: base.yaml
+
+properties:
+  sensor:
+    type: phandle
+    required: true
+    description: The motion sensor (for example &mpu6050)
+  enable-gpios:
+    type: phandle-array
+    description: |
+      Optional "clutch" button. When present the pointer only moves while the pin is
+      active, and every press takes the current pose as the neutral position.
+  invert-x:
+    type: boolean
+  invert-y:
+    type: boolean
+  swap-xy:
+    type: boolean
